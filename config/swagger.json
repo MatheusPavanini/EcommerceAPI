@@ -1,0 +1,1372 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Undermarket Ecommerce API",
+        "description": "Undermaket Ecommerce API representa o servidor usado para realizar as operações lógicas do ecommerce. Você pode encontrar nosso ecommerce oficial em [http://159.65.106.219](http://159.65.106.219)."
+    },
+    "schemes": [
+        "http"
+    ],
+    "host": "159.65.106.219:5000",
+    "basePath": "/api/v1",
+    "tags": [
+        {
+            "name": "Jogos",
+            "description": "Controlar e obter informações de jogos."
+        },
+        {
+            "name": "Clientes",
+            "description": "Autenticar, cadastrar e gerenciar dados de clientes."
+        },
+        {
+            "name": "Compras",
+            "description": "Obter e gerenciar detalhes de compras."
+        },
+        {
+            "name": "Consoles",
+            "description": "Controlar e obter informações de consoles."
+        },
+        {
+            "name": "Arquivo Estáticos",
+            "description": "Obter arquivos estáticos disponíveis."
+        }
+    ],
+    "paths": {
+        "/jogos": {
+            "get": {
+                "tags": [
+                    "Jogos"
+                ],
+                "summary": "Buscar jogos",
+                "description": "Retorna uma lista de jogos à venda no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Indice utilizado para inicio de paginação.",
+                        "type": "number"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limite utilizado para paginação.",
+                        "type": "number"
+                    },
+                    {
+                        "in": "query",
+                        "name": "plataforma",
+                        "description": "Filtrar jogos por plataforma.",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna lista de jogos",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/definitions/Jogo",
+                                                "type": "object"
+                                            }
+                                        ],
+                                        "properties": {
+                                            "_id": {
+                                                "type": "string"
+                                            },
+                                            "__t": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "links": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "rel": {
+                                                "type": "string"
+                                            },
+                                            "href": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Jogos"
+                ],
+                "summary": "Cadastra jogos",
+                "description": "Cadastra jogos à serem vendidos no ecommerce.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Jogo que precisa ser enviado para adição na base de dados.",
+                        "required": "true",
+                        "schema": {
+                            "$ref": "#/definitions/Jogo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Jogo inserido na base com sucesso.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Jogo",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Objeto enviado não está de acordo com o mínimo solicitado."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/jogos/{id}": {
+            "get": {
+                "tags": [
+                    "Jogos"
+                ],
+                "summary": "Buscar jogo pelo id.",
+                "description": "Retorna um jogo específico à venda no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Identificador de jogo específico.",
+                        "required": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna jogo pelo id",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Jogo",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "O identificador passado como parâmetro não corresponde a nenhum jogo disponível"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Jogos"
+                ],
+                "summary": "Altera dados de jogo",
+                "description": "Altera dados de jogo especificado pelo id. Não precisam ser passadas todas as propriedades.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Identificador de jogo específico.",
+                        "required": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Jogo que precisa ser enviado para edição na base de dados(não precisa de todas as propriedades, no mínimo uma é necessário).",
+                        "required": "true",
+                        "schema": {
+                            "$ref": "#/definitions/Jogo"
+                        }
+                    }
+                ],
+                "consumes": [
+                    "image/jpg"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Jogos"
+                ],
+                "summary": "Deleta jogo",
+                "description": "Deleta dados de jogo especificado pelo id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Identificador de jogo específico.",
+                        "required": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Jogo deletado com sucesso."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/jogos/{id}/imagens": {
+            "patch": {
+                "tags": [
+                    "Jogos"
+                ],
+                "summary": "Adiciona imagem para jogo",
+                "description": "Adiciona imagens a um jogo especificado pelo id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Identificador de jogo específico.",
+                        "required": "true",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "imagem",
+                        "description": "Imagem a ser associada ao jogo.",
+                        "required": "true",
+                        "type": "string",
+                        "format": "file"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Imagem adicionada com sucesso."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Autenticação",
+                "description": "Realiza autenticação para serem realizadas operações no ecommerce.",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Login único o qual identifica o usuário.",
+                        "required": "true",
+                        "type": "string",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "login": {
+                                    "type": "string",
+                                    "required": true
+                                },
+                                "senha": {
+                                    "type": "string",
+                                    "required": true
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuário autenticado com sucesso."
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UnauthorizedError"
+                    }
+                }
+            }
+        },
+        "/compras": {
+            "get": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Buscar todas as compras.",
+                "description": "Retorna todas as compras realizadas no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Indexador de início.",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Quantidade de compras retornadas.",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna todas as compras.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/Compra",
+                                        "type": "object"
+                                    }
+                                ],
+                                "properties": {
+                                    "_id": {
+                                        "type": "string"
+                                    },
+                                    "__t": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "A busca não retornou nenhuma compra."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Iniciar nova compra.",
+                "description": "Insere dados de nova compra iniciada no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Dados de compra.",
+                        "required": "true",
+                        "type": "object", 
+                        "schema": {
+                            "$ref": "#/definitions/Compra"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna todas as compras.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Compra",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/compras/{id}": {
+            "get": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Buscar compra pelo id.",
+                "description": "Busca compra específica pelo id.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Id de compra.",
+                        "required": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna dados de compra.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Compra",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Compras"
+                ],
+                "summary": "Alterar dados de compra.",
+                "description": "Altera dados de compra iniciada no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Dados a serem alterados de compra.",
+                        "required": "true",
+                        "type": "object", 
+                        "schema": {
+                            "$ref": "#/definitions/Compra"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna compra alterada.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Compra",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/clientes": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Buscar todos os clientes.",
+                "description": "Retorna todos os clientes cadastrados no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Indexador de início.",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limite de clientes retornados.",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna todos os clientes.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/Cliente",
+                                        "type": "object"
+                                    }
+                                ],
+                                "properties": {
+                                    "_id": {
+                                        "type": "string"
+                                    },
+                                    "__t": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "A busca não retornou nenhum cliente."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Cadastrar cliente.",
+                "description": "Insere dados de novo cliente no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Dados de clientedd.",
+                        "required": "true",
+                        "type": "object", 
+                        "schema": {
+                            "$ref": "#/definitions/Cliente"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna dados do cliente inserido.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Cliente",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/clientes/{id}": {
+            "get": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Buscar cliente pelo id.",
+                "description": "Busca cliente específico pelo id.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Id de cliente.",
+                        "required": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna dados de cliente.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Cliente",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Alterar dados de cliente.",
+                "description": "Altera dados de clientes cadastrados no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Dados a serem alterados de cliente.",
+                        "required": "true",
+                        "type": "object", 
+                        "schema": {
+                            "$ref": "#/definitions/Cliente"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna dados alterados do cliente.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Cliente",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Remove cliente.",
+                "description": "Remove cliente cadastrado no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Remoção concluída."
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/consoles": {
+            "get": {
+                "tags": [
+                    "Consoles"
+                ],
+                "summary": "Buscar consoles.",
+                "description": "Buscar todos os consoles à venda no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Indexador de início.",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limite de consoles retornados.",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna todos os consoles.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/Console",
+                                        "type": "object"
+                                    }
+                                ],
+                                "properties": {
+                                    "_id": {
+                                        "type": "string"
+                                    },
+                                    "__t": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "A busca não retornou nenhuma compra."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Consoles"
+                ],
+                "summary": "Inserir console.",
+                "description": "Insere dados de novo console no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Dados de console.",
+                        "required": "true",
+                        "type": "object", 
+                        "schema": {
+                            "$ref": "#/definitions/Console"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna console inserido.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Console",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/consoles/{id}": {
+            "get": {
+                "tags": [
+                    "Consoles"
+                ],
+                "summary": "Buscar compra pelo id.",
+                "description": "Busca compra específica pelo id.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Id de compra.",
+                        "required": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna dados de compra.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Compra",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Consoles"
+                ],
+                "summary": "Alterar dados de console.",
+                "description": "Altera dados de console cadastrado no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Dados a serem alterados de console.",
+                        "required": "true",
+                        "type": "object", 
+                        "schema": {
+                            "$ref": "#/definitions/Console"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna compra alterada.",
+                        "schema": {
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Console",
+                                    "type": "object"
+                                }
+                            ],
+                            "properties": {
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "__t": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Consoles"
+                ],
+                "summary": "Remove dados de console.",
+                "description": "Remove dados de console inserido no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Dados a serem inserido de compra.",
+                        "required": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna console alterado."
+                    },
+                    "400": {
+                        "description": "Os dados enviados são inválidos."
+                    }
+                },
+                "security": [
+                    {
+                        "undermarket_auth": [
+                            "write:jogos"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/static": {
+            "get": {
+                "tags": [
+                    "Arquivo Estáticos"
+                ],
+                "summary": "Remove dados de console.",
+                "description": "Remove dados de console inserido no ecommerce.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Id de produto a receber imagem.",
+                        "required": "true",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Insere imgame para produto"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "UnauthorizedError": {
+                "description": "Ocorreu uma falha na autenticação."
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "scopes": {
+                    "write:jogos": "Adicionar jogos à serem vendidos"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "undermarket_auth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+            "authorizationUrl": "/clientes/login",
+            "flow": "implicit",
+            "scopes": {
+                "write:jogos": "Adicionar jogos à serem vendidos"
+            }
+        }
+    },
+    "definitions": {
+        "Produto": {
+            "type": "object",
+            "required": [
+                "nome",
+                "preco"
+            ],
+            "properties": {
+                "nome": {
+                    "type": "string"
+                },
+                "descricao": {
+                    "type": "string"
+                },
+                "preco": {
+                    "type": "number"
+                },
+                "maximo": {
+                    "type": "string"
+                },
+                "imagem": {
+                    "type": "string"
+                }
+            }
+        },
+        "Jogo": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/Produto",
+                    "type": "object"
+                }
+            ],
+            "properties": {
+                "desenvolvedora": {
+                    "type": "string"
+                },
+                "genero": {
+                    "type": "string"
+                },
+                "dataLancamento": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "2017-01-01"
+                },
+                "classificacaoIndicativa": {
+                    "type": "string"
+                },
+                "plataforma": {
+                    "type": "string"
+                }
+            }
+        },
+        "Usuario": {
+            "type": "object",
+            "required": [
+                "nome",
+                "dataNascimento",
+                "cpf",
+                "email",
+                "login",
+                "senha"
+            ],
+            "properties": {
+                "nome": {
+                    "type": "string"
+                },
+                "telefone": {
+                    "type": "string"
+                },
+                "dataNascimento": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "cpf": {
+                    "type": "string",
+                    "unique": true,
+                    "minLength": 11,
+                    "maxLength": 11
+                },
+                "email": {
+                    "type": "string",
+                    "unique": true
+                },
+                "login": {
+                    "type": "string",
+                    "unique": true,
+                    "minLength": 6
+                },
+                "senha": {
+                    "type": "string",
+                    "select": false,
+                    "minLength": 6
+                }
+            }
+        },
+        "Cliente": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/Usuario",
+                    "type": "object"
+                }
+            ],
+            "properties": {
+                "endereco": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Endereço"
+                        }
+                    ]
+                }
+            }
+        },
+        "Endereço": {
+            "type": "object",
+            "required": [
+                "cep",
+                "rua",
+                "bairro",
+                "cidade",
+                "estado",
+                "numero"
+            ],
+            "properties": {
+                "cep": {
+                    "type": "string"
+                },
+                "rua": {
+                    "type": "string"
+                },
+                "bairro": {
+                    "type": "string"
+                },
+                "cidade": {
+                    "type": "string"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "numero": {
+                    "type": "number"
+                }
+            }
+        },
+        "Compra": {
+            "type": "object",
+            "required": [
+                "data",
+                "valorTotal"
+            ],
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "valorTotal": {
+                    "type": "number"
+                },
+                "cartao": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Cartao",
+                            "type": "object"
+                        }
+                    ]
+                },
+                "cliente": {
+                    "type": "object",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Cliente",
+                            "type": "object"
+                        }
+                    ]
+                }
+            }
+        },
+        "Cartao": {
+            "type": "object",
+            "required": [
+                "numero",
+                "dataVencimento",
+                "codigoSeguranca",
+                "bandeira",
+                "nomeTitular",
+                "cpfTitular"
+            ],
+            "properties": {
+                "numero": {
+                    "type": "number"
+                },
+                "dataVencimento": {
+                    "type": "number"
+                },
+                "codigoSeguranca": {
+                    "type": "number"
+                },
+                "bandeira": {
+                    "type": "string"
+                },
+                "nomeTitular": {
+                    "type": "string"
+                },
+                "cpfTitular": {
+                    "type": "string"
+                }
+            }
+        },
+        "Console": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/Produto",
+                    "type": "object"
+                }
+            ],
+            "required": [
+                "fabricante",
+                "especificacoes",
+                "armazenamento"
+            ],
+            "properties": {
+                "fabricante": {
+                    "type": "string"
+                },
+            
+                "especificacoes": {
+                    "type": "string"
+                },
+            
+                "armazenamento": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

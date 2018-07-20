@@ -1,0 +1,24 @@
+version: '3.1'
+
+services:
+  produtos_api:
+    build: 
+      dockerfile: Dockerfile
+      context: .
+    image: tcc/ecommerce_produtos_api:development
+    volumes:
+      - images-repo:/uploads
+    networks:
+      - outside
+    ports:
+      - 5000:5000
+    restart: always
+
+volumes:
+  images-repo:
+    external: true
+
+networks:
+  outside:
+    external:
+      name: ecommerce

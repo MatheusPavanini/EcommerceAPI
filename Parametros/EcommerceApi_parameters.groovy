@@ -1,0 +1,8 @@
+env.NAME = 'ecommerceapi'
+env.REPO = 'tcc/ecommerceapi'
+env.EXPOSED_PORT = '5000'
+env.NETWORK = 'ecommerce'
+env.TAG = 'development'
+env.API_PORT = '5000'
+env.VOLUME_SOURCE = 'images-repo'
+env.VOLUME_TARGET = '/home/app/uploads'
